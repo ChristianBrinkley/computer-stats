@@ -154,7 +154,7 @@ class MainPage(tk.Frame):
                 if self.controller.user.computer_stats_tracker_switch == False:
                     break
                 if master_switch == False:
-                    sql = "UPDATE computer_id SET cpu_percent = '-1' cpu_max_percent = '-1' WHERE id = %s"
+                    sql = "UPDATE computer_id SET cpu_percent = '0', cpu_max_percent = '0' WHERE id = %s"
                     val = (self.controller.user.computer_id,)
                     mycursor.execute(sql,val)
                     mydb.commit()
