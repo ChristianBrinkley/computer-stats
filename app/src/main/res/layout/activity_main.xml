@@ -38,6 +38,19 @@
         android:layout_marginBottom="15dip"
         android:singleLine="true" />
 
+    <!-- Error Label -->
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/error_message"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:paddingBottom="10dip"
+        android:textSize="17dip"
+        android:textColor="#FF0000"
+        android:textStyle="italic"/>
+
     <!-- Button Create Product -->
     <Button android:id="@+id/btnLogin"
         android:layout_width="fill_parent"

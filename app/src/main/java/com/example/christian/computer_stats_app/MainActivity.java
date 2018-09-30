@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     JSONParser jsonParser = new JSONParser();
     EditText inputComputerName;
     EditText inputPassword;
+    TextView error_message;
 
     private static URI url_login;
 
@@ -41,11 +43,13 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_CID = "cid";
+    private static final String TAG_MESSAGE = "message";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle("Login");
 
         // Edit Text
         inputComputerName = (EditText) findViewById(R.id.inputComputerName);
@@ -93,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
             params.add(new BasicNameValuePair("password", password));
 
             // getting JSON Object
-            // Note that create product url accepts POST method
             JSONObject json = jsonParser.makeHttpRequest(url_login,
                     "POST", params);
 
@@ -105,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 int success = json.getInt(TAG_SUCCESS);
 
                 if (success == 1) {
-                    // successfully created product
+                    // successfully logged in
                     Intent i = new Intent(getApplicationContext(), ViewStats.class);
                     i.putExtra("cid", json.getString(TAG_CID));
                     startActivity(i);
@@ -113,7 +116,9 @@ public class MainActivity extends AppCompatActivity {
                     // closing this screen
                     finish();
                 } else {
-                    // failed to create product
+                    // failed to login
+                    error_message = (TextView) findViewById(R.id.error_message);
+                    error_message.setText(json.getString(TAG_MESSAGE));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

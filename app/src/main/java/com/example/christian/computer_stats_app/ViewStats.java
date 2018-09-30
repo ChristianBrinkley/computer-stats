@@ -64,6 +64,7 @@ public class ViewStats extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_stats);
+        setTitle("Computer Stats");
 
         // getting id from intent
         Intent i = getIntent();
@@ -96,6 +97,7 @@ public class ViewStats extends AppCompatActivity {
 
         thread.start();
     }
+
 
     /**
      * Background Async Task to Load all product by making HTTP Request
