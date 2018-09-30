@@ -12,7 +12,7 @@ master_switch = True
 
 class User(object):
 
-    cpu_tracker_switch = True
+    computer_stats_tracker_switch = True
     track_cpu = True
 
     def __init__(self, computer_id, computer_name, password):
@@ -135,26 +135,40 @@ class MainPage(tk.Frame):
 
     def tracker(self):
         def run ():
-            while(self.controller.user.track_cpu == True and self.controller.user.cpu_tracker_switch == True):
-                sql = "UPDATE computer_id SET cpu_percent = %s WHERE id = %s"
-                val = (psutil.cpu_percent(), self.controller.user.computer_id)
-                mycursor.execute(sql,val)
+            while(self.controller.user.computer_stats_tracker_switch == True):
+                if(self.controller.user.track_cpu == True):
+                    sql = "SELECT cpu_max_percent FROM computer_id WHERE id = %s"
+                    val = (self.controller.user.computer_id,)
+                    mycursor.execute(sql,val)
+                    previous_max = mycursor.fetchone()
+                    current_cpu = psutil.cpu_percent()
+                    if(previous_max[0]<current_cpu):
+                        sql_u = "UPDATE computer_id SET cpu_percent = %s, cpu_max_percent = %s WHERE id = %s"
+                        val_u = (current_cpu, current_cpu, self.controller.user.computer_id)
+                    else:
+                        sql_u = "UPDATE computer_id SET cpu_percent = %s WHERE id = %s"
+                        val_u = (current_cpu, self.controller.user.computer_id)
+                    mycursor.execute(sql_u,val_u)
                 mydb.commit()
                 time.sleep(1)
-                if self.controller.user.cpu_tracker_switch == False:
+                if self.controller.user.computer_stats_tracker_switch == False:
                     break
                 if master_switch == False:
+                    sql = "UPDATE computer_id SET cpu_percent = '-1' cpu_max_percent = '-1' WHERE id = %s"
+                    val = (self.controller.user.computer_id,)
+                    mycursor.execute(sql,val)
+                    mydb.commit()
                     break
         thread = threading.Thread(target=run)
         thread.start()
 
     def start_tracker(self):
-        self.controller.user.cpu_tracker_switch = True
+        self.controller.user.computer_stats_tracker_switch = True
         print('CPU Tracker On')
         self.tracker()
 
     def stop_tracker(self):
-        self.controller.user.cpu_tracker_switch = False
+        self.controller.user.computer_stats_tracker_switch = False
         print('CPU Tracker Off')
 
 class SettingsPage(tk.Frame):
