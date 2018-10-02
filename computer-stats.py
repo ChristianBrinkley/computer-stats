@@ -60,10 +60,10 @@ class LoginPage(tk.Frame):
 
         self.error_message = tk.StringVar()
 
-        label1 = tk.Label(self, text="Please enter computer name\nand password", font=controller.title_font)
+        label1 = tk.Label(self, text="Please enter computer name and password", font=controller.title_font, wraplength=300, justify='center')
         label2 = tk.Label(self, text="Computer Name:", font=controller.reg_font)
         label3 = tk.Label(self, text="Password:", font=controller.reg_font)
-        label4 = tk.Label(self, textvariable=self.error_message, font=self.controller.err_font, fg="red")
+        label4 = tk.Label(self, textvariable=self.error_message, font=self.controller.err_font, fg="red", wraplength=270, justify='left')
 
         entry1 = tk.Entry(self)
         entry2 = tk.Entry(self)
@@ -72,10 +72,10 @@ class LoginPage(tk.Frame):
         button2 = tk.Button(self, text="QUIT", command=controller.kill)
         button3 = tk.Button(self, text="NEW USER", command=lambda: self.newUser(computerName=entry1.get(), password=entry2.get()))
 
-        label1.grid(row=0, column=0, columnspan=3)
+        label1.grid(row=0, column=0, columnspan=3, sticky='w')
         label2.grid(row=1, column=0, sticky='e')
         label3.grid(row=2, column=0, sticky='e')
-        label4.grid(row=3, column=0, columnspan=4)
+        label4.grid(row=3, column=0, columnspan=3, sticky='w')
         
         entry1.grid(row=1, column=1)
         entry2.grid(row=2, column=1)
@@ -118,32 +118,30 @@ class LoginPage(tk.Frame):
             if(row_count > 0):
                 self.error_message.set("Computer name already taken.")
             elif (len(computerName) <= 3 and len(password) <= 3):
-                self.error_message.set("Computer name and password must be\nlonger than 3 characters.")
+                self.error_message.set("Computer name and password must be longer than 3 characters.")
             elif (len(computerName) <= 3):
-                self.error_message.set("Computer name must be longer than 3\ncharacters.")
+                self.error_message.set("Computer name must be longer than 3 characters.")
             elif (len(password) <= 3):
-                self.error_message.set("Password must be longer than 3\ncharacters.")
+                self.error_message.set("Password must be longer than 3 characters.")
         
 class MainPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-        label1 = tk.Label(self, text="Welcome to ComputerStats", font=controller.title_font)
+        label_title = tk.Label(self, text="Welcome to ComputerStats", font=controller.title_font)
 
-        button1 = tk.Button(self, text="LOGOUT")
-        button2 = tk.Button(self, text="QUIT", command=controller.kill)
-        button3 = tk.Button(self, text="Start Monitoring", command=self.start_tracker)
-        button4 = tk.Button(self, text="Stop Monitoring", command=self.stop_tracker)
-        button5 = tk.Button(self, text="SETTINGS", command=lambda: self.controller.show_frame("SettingsPage"))
+        button_quit = tk.Button(self, text="QUIT", command=controller.kill)
+        button_start = tk.Button(self, text="Start Monitoring", command=self.start_tracker)
+        button_stop = tk.Button(self, text="Stop Monitoring", command=self.stop_tracker)
+        button_settings = tk.Button(self, text="SETTINGS", command=lambda: self.controller.show_frame("SettingsPage"))
 
-        label1.grid(row=0, column=0, columnspan=5)
+        label_title.grid(row=0, column=0, columnspan=2)
 
-        button3.grid(row=1, column=1)
-        button4.grid(row=1, column=3)
-        button1.grid(row=2, column=0)
-        button2.grid(row=2, column=2)
-        button5.grid(row=2, column=4)
+        button_start.grid(row=1, column=0, sticky='we', padx=5, pady=5)
+        button_stop.grid(row=1, column=1, sticky='we', padx=5, pady=5)
+        button_quit.grid(row=2, column=0, sticky='we', padx=5, pady=5)
+        button_settings.grid(row=2, column=1, sticky='we', padx=5, pady=5)
 
     def tracker(self):
         def run ():
@@ -217,4 +215,5 @@ class SettingsPage(tk.Frame):
 
 if __name__ == "__main__":
     app = ComputerStatsApp()
+    app.protocol("WM_DELETE_WINDOW", app.kill)
     app.mainloop()
