@@ -27,7 +27,7 @@ class ComputerStatsApp(tk.Tk):
 
         self.title_font = ('Helvetica', 14, "bold", "italic")
         self.reg_font = ('Helvetica', 12)
-        self.err_font = ('Helvetica', 12, "italic")
+        self.err_font = ('Helvetica', 11, "italic")
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -57,13 +57,13 @@ class LoginPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        
-        error_message = tk.StringVar()
-        
+
+        self.error_message = tk.StringVar()
+
         label1 = tk.Label(self, text="Please enter computer name\nand password", font=controller.title_font)
         label2 = tk.Label(self, text="Computer Name:", font=controller.reg_font)
         label3 = tk.Label(self, text="Password:", font=controller.reg_font)
-        label4 = tk.Label(self, textvariable=error_message, font=controller.err_font, fg="red")
+        label4 = tk.Label(self, textvariable=self.error_message, font=self.controller.err_font, fg="red")
 
         entry1 = tk.Entry(self)
         entry2 = tk.Entry(self)
@@ -75,8 +75,8 @@ class LoginPage(tk.Frame):
         label1.grid(row=0, column=0, columnspan=3)
         label2.grid(row=1, column=0, sticky='e')
         label3.grid(row=2, column=0, sticky='e')
-        label4.grid(row=3, column=0)
-
+        label4.grid(row=3, column=0, columnspan=4)
+        
         entry1.grid(row=1, column=1)
         entry2.grid(row=2, column=1)
 
@@ -96,7 +96,7 @@ class LoginPage(tk.Frame):
             self.controller.user = User(computer_id=val[0], computer_name=val[1], password=val[2])
             self.controller.show_frame("MainPage")
         else:
-            self.error_message.set('Computer Name or Password is incorrect.')
+            self.error_message.set('Computer name or password is incorrect.')      
     
     def newUser(self, computerName, password):
         sql = "SELECT * FROM computer_id WHERE computer_name = %s"
@@ -115,7 +115,14 @@ class LoginPage(tk.Frame):
             self.controller.user = User(computer_id=val[0], computer_name=val[1], password=val[2])
             self.controller.show_frame("MainPage")
         else:
-            print("Username already taken")
+            if(row_count > 0):
+                self.error_message.set("Computer name already taken.")
+            elif (len(computerName) <= 3 and len(password) <= 3):
+                self.error_message.set("Computer name and password must be\nlonger than 3 characters.")
+            elif (len(computerName) <= 3):
+                self.error_message.set("Computer name must be longer than 3\ncharacters.")
+            elif (len(password) <= 3):
+                self.error_message.set("Password must be longer than 3\ncharacters.")
         
 class MainPage(tk.Frame):
     def __init__(self, parent, controller):
