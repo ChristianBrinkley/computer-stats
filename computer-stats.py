@@ -27,6 +27,7 @@ class ComputerStatsApp(tk.Tk):
 
         self.title_font = ('Helvetica', 14, "bold", "italic")
         self.reg_font = ('Helvetica', 12)
+        self.err_font = ('Helvetica', 12, "italic")
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -57,9 +58,12 @@ class LoginPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         
+        error_message = tk.StringVar()
+        
         label1 = tk.Label(self, text="Please enter computer name\nand password", font=controller.title_font)
         label2 = tk.Label(self, text="Computer Name:", font=controller.reg_font)
         label3 = tk.Label(self, text="Password:", font=controller.reg_font)
+        label4 = tk.Label(self, textvariable=error_message, font=controller.err_font, fg="red")
 
         entry1 = tk.Entry(self)
         entry2 = tk.Entry(self)
@@ -71,13 +75,14 @@ class LoginPage(tk.Frame):
         label1.grid(row=0, column=0, columnspan=3)
         label2.grid(row=1, column=0, sticky='e')
         label3.grid(row=2, column=0, sticky='e')
+        label4.grid(row=3, column=0)
 
         entry1.grid(row=1, column=1)
         entry2.grid(row=2, column=1)
 
-        button1.grid(row=3, column=0, sticky='we')
-        button3.grid(row=3, column=1, sticky='we')
-        button2.grid(row=3, column=2, sticky='we')
+        button1.grid(row=4, column=0, sticky='we')
+        button3.grid(row=4, column=1, sticky='we')
+        button2.grid(row=4, column=2, sticky='we')
     
     def login(self, computerName, password):
         sql = "SELECT password FROM computer_id WHERE computer_name = %s"
@@ -91,7 +96,7 @@ class LoginPage(tk.Frame):
             self.controller.user = User(computer_id=val[0], computer_name=val[1], password=val[2])
             self.controller.show_frame("MainPage")
         else:
-            print("Invalid Entry")
+            self.error_message.set('Computer Name or Password is incorrect.')
     
     def newUser(self, computerName, password):
         sql = "SELECT * FROM computer_id WHERE computer_name = %s"
@@ -99,7 +104,7 @@ class LoginPage(tk.Frame):
         mycursor.execute(sql, val)
         row_count = mycursor.rowcount
         if(row_count <= 0 and len(computerName) > 3 and len(password) > 3):
-            sql = "INSERT INTO computer_id (computer_name, password) VALUES (%s, %s)"
+            sql = "INSERT INTO computer_id (computer_name, password, cpu_percent, cpu_max_percent) VALUES (%s, %s, 0, 0)"
             val = (computerName, sha256_crypt.encrypt(password))
             mycursor.execute(sql, val)
             mydb.commit()
@@ -154,11 +159,11 @@ class MainPage(tk.Frame):
                 if self.controller.user.computer_stats_tracker_switch == False:
                     break
                 if master_switch == False:
-                    sql = "UPDATE computer_id SET cpu_percent = '0', cpu_max_percent = '0' WHERE id = %s"
-                    val = (self.controller.user.computer_id,)
-                    mycursor.execute(sql,val)
-                    mydb.commit()
                     break
+            sql = "UPDATE computer_id SET cpu_percent = %s, cpu_max_percent = %s WHERE id = %s"
+            val = ('0', '0', self.controller.user.computer_id)
+            mycursor.execute(sql,val)
+            mydb.commit()
         thread = threading.Thread(target=run)
         thread.start()
 
