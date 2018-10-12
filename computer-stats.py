@@ -14,6 +14,8 @@ class User(object):
 
     computer_stats_tracker_switch = True
     track_cpu = True
+    track_memory = True
+    track_disk = True
 
     def __init__(self, computer_id, computer_name, password):
         self.computer_id = computer_id
@@ -186,32 +188,54 @@ class SettingsPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         cpuToggle = tk.IntVar(None, 1)
+        memoryToggle = tk.IntVar(None, 1)
+        diskToggle = tk.IntVar(None, 1)
         
-        label1 = tk.Label(self, text="Settings", font=controller.title_font)
-        label2 = tk.Label(self, text="CPU Usage:", font=controller.reg_font)
+        title_label = tk.Label(self, text="Settings", font=controller.title_font)
+        cpu_toggle_label = tk.Label(self, text="CPU Usage:", font=controller.reg_font)
+        memory_toggle_label = tk.Label(self, text="Memory Usage:", font=controller.reg_font)
+        disk_toggle_label = tk.Label(self, text="Disk Usage:", font=controller.reg_font)
 
-        radio1 = tk.Radiobutton(self, text="ON", indicatoron = 1, variable = cpuToggle, value = 1)
-        radio2 = tk.Radiobutton(self, text="OFF", indicatoron = 1, variable = cpuToggle, value = 0)
+        cpu_on = tk.Radiobutton(self, text="ON", indicatoron = 1, variable = cpuToggle, value = 1)
+        cpu_off = tk.Radiobutton(self, text="OFF", indicatoron = 1, variable = cpuToggle, value = 0)
+        memory_on = tk.Radiobutton(self, text="ON", indicatoron = 1, variable = memoryToggle, value = 1)
+        memory_off = tk.Radiobutton(self, text="OFF", indicatoron = 1, variable = memoryToggle, value = 0)
+        disk_on = tk.Radiobutton(self, text="ON", indicatoron = 1, variable = diskToggle, value = 1)
+        disk_off = tk.Radiobutton(self, text="OFF", indicatoron = 1, variable = cpuToggle, value = 0)
 
-        button1 = tk.Button(self, text="BACK", command=lambda: self.controller.show_frame("MainPage"))
-        button2 = tk.Button(self, text="QUIT", command=controller.kill)
-        button3 = tk.Button(self, text="SAVE", command=lambda: self.update_settings(cpu=cpuToggle.get()))
+        back_button = tk.Button(self, text="BACK", command=lambda: self.controller.show_frame("MainPage"))
+        quit_button = tk.Button(self, text="QUIT", command=controller.kill)
+        save_button = tk.Button(self, text="SAVE", command=lambda: self.update_settings(cpuToggle=cpuToggle.get(), memoryToggle = memoryToggle.get(), diskToggle = diskToggle.get()))
 
-        label1.grid(row=0, column=0)
-        label2.grid(row=1, column=0, sticky="e")
+        title_label.grid(row=0, column=0)
+        cpu_toggle_label.grid(row=1, column=0, sticky="e")
+        memory_toggle_label.grid(row=2, column=0, sticky="e")
+        disk_toggle_label.grid(row=3, column=0, sticky="e")
 
-        radio1.grid(row=1, column=1)
-        radio2.grid(row=1, column=2)
+        cpu_on.grid(row=1, column=1)
+        cpu_off.grid(row=1, column=2)
+        memory_on.grid(row=2, column=1)
+        memory_off.grid(row=2, column=2)
+        disk_on.grid(row=3, column=1)
+        disk_off.grid(row=3, column=2)
 
-        button1.grid(row=3, column=0)
-        button3.grid(row=3, column=1)
-        button2.grid(row=3, column=2)
+        back_button.grid(row=4, column=0)
+        save_button.grid(row=4, column=1)
+        quit_button.grid(row=4, column=2)
 
-    def update_settings(self, cpu):
-        if (cpu == 1):
+    def update_settings(self, cpuToggle, memoryToggle, diskToggle):
+        if (cpuToggle == 1):
             self.controller.user.track_cpu = True
-        elif(cpu == 0):
+        elif(cpuToggle == 0):
             self.controller.user.track_cpu = False
+        if (memoryToggle == 1):
+            self.controller.user.track_memory = True
+        elif(memoryToggle == 0):
+            self.controller.user.track_memory = False
+        if(diskToggle == 1):
+            self.controller.user.track_disk = True
+        elif(diskToggle == 0):
+            self.controller.user.track_disk = False
 
 if __name__ == "__main__":
     app = ComputerStatsApp()
