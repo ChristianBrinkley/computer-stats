@@ -157,13 +157,18 @@ class MainPage(tk.Frame):
         def run ():
             system_boot_time = psutil.boot_time()
             computer_user = psutil.users()[0][0]
-            cpu_count = psutil.cpu_count()
-            sql = "UPDATE stats SET system_boot_time = %s, computer_user = %s, cpu_count = %s WHERE cid = %s"
-            val = (datetime.datetime.fromtimestamp(system_boot_time).strftime("%Y-%m-%d %H:%M:%S"), computer_user, cpu_count, self.controller.user.cid)
+            cpu_count_physical = psutil.cpu_count(logical=False)
+            cpu_count_logical = psutil.cpu_count()
+            cpu_freq = psutil.cpu_freq()[2]
+            memory_total = round(psutil.virtual_memory()[0]/1073741824, 2)
+            sql = "UPDATE stats SET system_boot_time = %s, computer_user = %s, cpu_count_physical = %s, cpu_count_logical = %s, cpu_frequency = %s, memory_total = %s WHERE cid = %s"
+            val = (datetime.datetime.fromtimestamp(system_boot_time).strftime("%Y-%m-%d %H:%M:%S"), computer_user, cpu_count_physical, cpu_count_logical, cpu_freq, memory_total, self.controller.user.cid)
             mycursor.execute(sql, val)
             while(self.controller.user.computer_stats_tracker_switch == True):
                 if(self.controller.user.track_cpu == True):
                     self.update_cpu()
+                if(self.controller.user.track_memory == True):
+                    self.update_memory()
                 mydb.commit()
                 time.sleep(1)
                 if self.controller.user.computer_stats_tracker_switch == False:
@@ -190,13 +195,12 @@ class MainPage(tk.Frame):
             sql_u = "UPDATE stats SET cpu_percent = %s WHERE cid = %s"
             val_u = (current_cpu, self.controller.user.cid)
         mycursor.execute(sql_u,val_u)
-        sql = "SELECT cpu_max_frequency, cpu_min_frequency FROM stats WHERE cid = %s"
-        val = (self.controller.user.cid,)
-        mycursor.execute(sql,val)
-
 
     def update_memory(self):
-        return True
+        memory = psutil.virtual_memory()
+        sql = "UPDATE stats SET memory_available = %s, memory_used = %s, memory_percent = %s WHERE cid = %s"
+        val = (round(memory[1]/1073741824, 2), round(memory[3]/1073741824, 2), memory[2], self.controller.user.cid)
+        mycursor.execute(sql, val)
 
     def update_disks(self):
         return True
