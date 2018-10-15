@@ -5,6 +5,7 @@ import threading
 import mysql.connector
 from passlib.hash import sha256_crypt
 import uuid
+import datetime
 
 mydb = mysql.connector.connect(host="localhost", port="8889", user="computer-stats", password="ouaGS1zjUeu5sW3x", database="computer-stats")
 mycursor = mydb.cursor(buffered=True)
@@ -122,6 +123,7 @@ class LoginPage(tk.Frame):
             val = mycursor.fetchone()
             self.controller.user = User(cid=val[1], computer_name=val[2], password=val[3])
             self.controller.show_frame("MainPage")
+            # TODO add disk detection and database updating
         else:
             if(row_count > 0):
                 self.error_message.set("Computer name already taken.")
@@ -153,25 +155,15 @@ class MainPage(tk.Frame):
 
     def tracker(self):
         def run ():
+            system_boot_time = psutil.boot_time()
+            computer_user = psutil.users()[0][0]
+            cpu_count = psutil.cpu_count()
+            sql = "UPDATE stats SET system_boot_time = %s, computer_user = %s, cpu_count = %s WHERE cid = %s"
+            val = (datetime.datetime.fromtimestamp(system_boot_time).strftime("%Y-%m-%d %H:%M:%S"), computer_user, cpu_count, self.controller.user.cid)
+            mycursor.execute(sql, val)
             while(self.controller.user.computer_stats_tracker_switch == True):
                 if(self.controller.user.track_cpu == True):
-                    sql = "SELECT cpu_max_percent FROM stats WHERE cid = %s"
-                    val = (self.controller.user.cid,)
-                    mycursor.execute(sql,val)
-                    previous_max = mycursor.fetchone()
-                    current_cpu = psutil.cpu_percent()
-                    if(previous_max[0]<current_cpu):
-                        sql_u = "UPDATE stats SET cpu_percent = %s, cpu_max_percent = %s WHERE cid = %s"
-                        val_u = (current_cpu, current_cpu, self.controller.user.cid)
-                    else:
-                        sql_u = "UPDATE stats SET cpu_percent = %s WHERE cid = %s"
-                        val_u = (current_cpu, self.controller.user.cid)
-                    mycursor.execute(sql_u,val_u)
-                    sql = "SELECT cpu_max_frequency, cpu_min_frequency FROM stats WHERE cid = %s"
-                    val = (self.controller.user.cid,)
-                    mycursor.execute(sql,val)
-                    previous_freq = mycursor.fetch()
-                    current_cpu_frequency = psutil.cpu_freq()
+                    self.update_cpu()
                 mydb.commit()
                 time.sleep(1)
                 if self.controller.user.computer_stats_tracker_switch == False:
@@ -184,6 +176,30 @@ class MainPage(tk.Frame):
             mydb.commit()
         thread = threading.Thread(target=run)
         thread.start()
+    
+    def update_cpu(self):
+        sql = "SELECT cpu_max_percent FROM stats WHERE cid = %s"
+        val = (self.controller.user.cid,)
+        mycursor.execute(sql,val)
+        previous_max = mycursor.fetchone()
+        current_cpu = psutil.cpu_percent()
+        if(previous_max[0]<current_cpu):
+            sql_u = "UPDATE stats SET cpu_percent = %s, cpu_max_percent = %s WHERE cid = %s"
+            val_u = (current_cpu, current_cpu, self.controller.user.cid)
+        else:
+            sql_u = "UPDATE stats SET cpu_percent = %s WHERE cid = %s"
+            val_u = (current_cpu, self.controller.user.cid)
+        mycursor.execute(sql_u,val_u)
+        sql = "SELECT cpu_max_frequency, cpu_min_frequency FROM stats WHERE cid = %s"
+        val = (self.controller.user.cid,)
+        mycursor.execute(sql,val)
+
+
+    def update_memory(self):
+        return True
+
+    def update_disks(self):
+        return True
 
     def start_tracker(self):
         self.controller.user.computer_stats_tracker_switch = True
