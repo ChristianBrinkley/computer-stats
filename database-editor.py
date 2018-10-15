@@ -4,9 +4,9 @@ mydb = mysql.connector.connect(host="localhost", port="8889", user="computer-sta
 
 mycursor = mydb.cursor()
 
-#sql = """DROP TABLE 'storage-stats'"""
+sql = """DROP TABLE disks"""
 
-#mycursor.execute(sql)
+mycursor.execute(sql)
 
 sql = """DROP TABLE stats"""
 
@@ -27,16 +27,16 @@ mycursor.execute(sql)
 sql = """CREATE TABLE stats (
     id INT PRIMARY KEY AUTO_INCREMENT,
     cid VARCHAR(255),
-    cpu_percent DOUBLE,
-    cpu_max_percent DOUBLE,
-    cpu_count INT,
-    cpu_frequency DOUBLE,
-    cpu_max_frequency DOUBLE,
-    cpu_min_frequency DOUBLE,
-    memory_total DOUBLE,
-    memory_available DOUBLE,
-    memory_used DOUBLE,
-    memory_percent DOUBLE,
+    cpu_percent DOUBLE DEFAULT 0,
+    cpu_max_percent DOUBLE DEFAULT 0,
+    cpu_count INT DEFAULT 0,
+    cpu_frequency DOUBLE DEFAULT 0,
+    cpu_max_frequency DOUBLE DEFAULT 0,
+    cpu_min_frequency DOUBLE DEFAULT 0,
+    memory_total DOUBLE DEFAULT 0,
+    memory_available DOUBLE DEFAULT 0,
+    memory_used DOUBLE DEFAULT 0,
+    memory_percent DOUBLE DEFAULT 0,
     system_boot_time DATETIME,
     computer_user VARCHAR(255),
     FOREIGN KEY (cid) REFERENCES user(cid)

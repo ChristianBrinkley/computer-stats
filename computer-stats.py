@@ -4,6 +4,7 @@ import time
 import threading
 import mysql.connector
 from passlib.hash import sha256_crypt
+import uuid
 
 mydb = mysql.connector.connect(host="localhost", port="8889", user="computer-stats", password="ouaGS1zjUeu5sW3x", database="computer-stats")
 mycursor = mydb.cursor(buffered=True)
@@ -17,8 +18,8 @@ class User(object):
     track_memory = True
     track_disk = True
 
-    def __init__(self, computer_id, computer_name, password):
-        self.computer_id = computer_id
+    def __init__(self, cid, computer_name, password):
+        self.cid = cid
         self.computer_name = computer_name
         self.password = password
 
@@ -87,34 +88,39 @@ class LoginPage(tk.Frame):
         button2.grid(row=4, column=2, sticky='we')
     
     def login(self, computerName, password):
-        sql = "SELECT password FROM computer_id WHERE computer_name = %s"
+        sql = "SELECT password FROM user WHERE computer_name = %s"
         val = (computerName,)
         mycursor.execute(sql, val)
         row_count = mycursor.rowcount
         if((row_count != 0) and sha256_crypt.verify(str(password), mycursor.fetchone()[0])):
-            sql = "SELECT * FROM computer_id WHERE computer_name = %s"
+            sql = "SELECT * FROM user WHERE computer_name = %s"
             mycursor.execute(sql, val)
             val = mycursor.fetchone()
-            self.controller.user = User(computer_id=val[0], computer_name=val[1], password=val[2])
+            self.controller.user = User(cid=val[1], computer_name=val[2], password=val[3])
             self.controller.show_frame("MainPage")
         else:
             self.error_message.set('Computer name or password is incorrect.')      
     
     def newUser(self, computerName, password):
-        sql = "SELECT * FROM computer_id WHERE computer_name = %s"
+        sql = "SELECT * FROM user WHERE computer_name = %s"
         val = (computerName,)
         mycursor.execute(sql, val)
         row_count = mycursor.rowcount
         if(row_count <= 0 and len(computerName) > 3 and len(password) > 3):
-            sql = "INSERT INTO computer_id (computer_name, password, cpu_percent, cpu_max_percent) VALUES (%s, %s, 0, 0)"
-            val = (computerName, sha256_crypt.encrypt(password))
+            cid = uuid.uuid4()
+            cid = str(cid)
+            sql = "INSERT INTO user (cid, computer_name, password) VALUES (%s, %s, %s)"
+            val = (cid, computerName, sha256_crypt.encrypt(password))
+            mycursor.execute(sql, val)
+            sql = "INSERT INTO stats (cid) VALUES (%s)"
+            val = (cid,)
             mycursor.execute(sql, val)
             mydb.commit()
-            sql = "SELECT * FROM computer_id WHERE computer_name = %s"
+            sql = "SELECT * FROM user WHERE computer_name = %s"
             val = (computerName,)
             mycursor.execute(sql, val)
             val = mycursor.fetchone()
-            self.controller.user = User(computer_id=val[0], computer_name=val[1], password=val[2])
+            self.controller.user = User(cid=val[1], computer_name=val[2], password=val[3])
             self.controller.show_frame("MainPage")
         else:
             if(row_count > 0):
@@ -149,26 +155,31 @@ class MainPage(tk.Frame):
         def run ():
             while(self.controller.user.computer_stats_tracker_switch == True):
                 if(self.controller.user.track_cpu == True):
-                    sql = "SELECT cpu_max_percent FROM computer_id WHERE id = %s"
-                    val = (self.controller.user.computer_id,)
+                    sql = "SELECT cpu_max_percent FROM stats WHERE cid = %s"
+                    val = (self.controller.user.cid,)
                     mycursor.execute(sql,val)
                     previous_max = mycursor.fetchone()
                     current_cpu = psutil.cpu_percent()
                     if(previous_max[0]<current_cpu):
-                        sql_u = "UPDATE computer_id SET cpu_percent = %s, cpu_max_percent = %s WHERE id = %s"
-                        val_u = (current_cpu, current_cpu, self.controller.user.computer_id)
+                        sql_u = "UPDATE stats SET cpu_percent = %s, cpu_max_percent = %s WHERE cid = %s"
+                        val_u = (current_cpu, current_cpu, self.controller.user.cid)
                     else:
-                        sql_u = "UPDATE computer_id SET cpu_percent = %s WHERE id = %s"
-                        val_u = (current_cpu, self.controller.user.computer_id)
+                        sql_u = "UPDATE stats SET cpu_percent = %s WHERE cid = %s"
+                        val_u = (current_cpu, self.controller.user.cid)
                     mycursor.execute(sql_u,val_u)
+                    sql = "SELECT cpu_max_frequency, cpu_min_frequency FROM stats WHERE cid = %s"
+                    val = (self.controller.user.cid,)
+                    mycursor.execute(sql,val)
+                    previous_freq = mycursor.fetch()
+                    current_cpu_frequency = psutil.cpu_freq()
                 mydb.commit()
                 time.sleep(1)
                 if self.controller.user.computer_stats_tracker_switch == False:
                     break
                 if master_switch == False:
                     break
-            sql = "UPDATE computer_id SET cpu_percent = %s, cpu_max_percent = %s WHERE id = %s"
-            val = ('0', '0', self.controller.user.computer_id)
+            sql = "UPDATE stats SET cpu_percent = %s, cpu_max_percent = %s WHERE cid = %s"
+            val = ('0', '0', self.controller.user.cid)
             mycursor.execute(sql,val)
             mydb.commit()
         thread = threading.Thread(target=run)
