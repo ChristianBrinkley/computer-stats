@@ -47,10 +47,10 @@ sql = """CREATE TABLE disks (
     id INT PRIMARY KEY AUTO_INCREMENT,
     cid VARCHAR(255),
     disk_path VARCHAR(255),
-    disk_total DOUBLE,
-    disk_used DOUBLE,
-    disk_free DOUBLE,
-    disk_percent DOUBLE,
+    disk_total DOUBLE DEFAULT 0,
+    disk_used DOUBLE DEFAULT 0,
+    disk_free DOUBLE DEFAULT 0,
+    disk_percent DOUBLE DEFAULT 0,
     FOREIGN KEY (cid) REFERENCES user(cid)
     )"""
 

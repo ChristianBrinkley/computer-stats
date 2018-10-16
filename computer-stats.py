@@ -19,10 +19,11 @@ class User(object):
     track_memory = True
     track_disk = True
 
-    def __init__(self, cid, computer_name, password):
+    def __init__(self, cid, computer_name, password, disks):
         self.cid = cid
         self.computer_name = computer_name
         self.password = password
+        self.disks = disks
 
 
 class ComputerStatsApp(tk.Tk):
@@ -97,8 +98,19 @@ class LoginPage(tk.Frame):
             sql = "SELECT * FROM user WHERE computer_name = %s"
             mycursor.execute(sql, val)
             val = mycursor.fetchone()
-            self.controller.user = User(cid=val[1], computer_name=val[2], password=val[3])
+            self.controller.user = User(cid=val[1], computer_name=val[2], password=val[3], disks=psutil.disk_partitions())
+            for disk in self.controller.user.disks:
+                sql = "SELECT * FROM disks WHERE cid=%s, disk_path = %s"
+                val = (self.controller.user.cid, disk[0])
+                mycursor.execute(sql, val)
+                row_count = mycursor.rowcount
+                if(row_count=0):
+                    sql = "INSERT INTO disks (cid, disk_path) VALUES (%s, %s)"
+                    val =(cid, disk[0])
+                    mycursor.execute(sql, val)
+            mydb.commit()  
             self.controller.show_frame("MainPage")
+            
         else:
             self.error_message.set('Computer name or password is incorrect.')      
     
@@ -116,14 +128,18 @@ class LoginPage(tk.Frame):
             sql = "INSERT INTO stats (cid) VALUES (%s)"
             val = (cid,)
             mycursor.execute(sql, val)
+            disks = psutil.disk_partitions()
+            for disk in disks:
+                sql = "INSERT INTO disks (cid, disk_path) VALUES (%s, %s)"
+                val =(cid, disk[0])
+                mycursor.execute(sql, val)
             mydb.commit()
             sql = "SELECT * FROM user WHERE computer_name = %s"
             val = (computerName,)
             mycursor.execute(sql, val)
             val = mycursor.fetchone()
-            self.controller.user = User(cid=val[1], computer_name=val[2], password=val[3])
+            self.controller.user = User(cid=val[1], computer_name=val[2], password=val[3], disks=disks)
             self.controller.show_frame("MainPage")
-            # TODO add disk detection and database updating
         else:
             if(row_count > 0):
                 self.error_message.set("Computer name already taken.")
