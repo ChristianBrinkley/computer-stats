@@ -6,21 +6,34 @@ mycursor = mydb.cursor()
 
 sql = """DROP TABLE disks"""
 
-mycursor.execute(sql)
+try:
+    mycursor.execute(sql)
+except:
+    pass
 
 sql = """DROP TABLE stats"""
 
-mycursor.execute(sql)
+try:
+    mycursor.execute(sql)
+except:
+    pass
 
 sql = """DROP TABLE user"""
 
-mycursor.execute(sql)
+try:
+    mycursor.execute(sql)
+except:
+    pass
 
 sql = """CREATE TABLE user ( 
     id INT PRIMARY KEY AUTO_INCREMENT,
     cid VARCHAR(255) UNIQUE,
     computer_name VARCHAR(255) UNIQUE,
-    password VARCHAR(255))"""
+    password VARCHAR(255),
+    tracking_all_stats TINYINT DEFAULT 0,
+    tracking_cpu TINYINT DEFAULT 1,
+    tracking_memory TINYINT DEFAULT 1,
+    tracking_disk TINYINT DEFAULT 1)"""
 
 mycursor.execute(sql)
 

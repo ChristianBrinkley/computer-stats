@@ -100,17 +100,16 @@ class LoginPage(tk.Frame):
             val = mycursor.fetchone()
             self.controller.user = User(cid=val[1], computer_name=val[2], password=val[3], disks=psutil.disk_partitions())
             for disk in self.controller.user.disks:
-                sql = "SELECT * FROM disks WHERE cid=%s, disk_path = %s"
+                sql = "SELECT * FROM disks WHERE (cid=%s) AND (disk_path = %s)"
                 val = (self.controller.user.cid, disk[0])
                 mycursor.execute(sql, val)
                 row_count = mycursor.rowcount
-                if(row_count=0):
+                if(row_count==0):
                     sql = "INSERT INTO disks (cid, disk_path) VALUES (%s, %s)"
-                    val =(cid, disk[0])
+                    val =(self.controller.user.cid, disk[0])
                     mycursor.execute(sql, val)
             mydb.commit()  
             self.controller.show_frame("MainPage")
-            
         else:
             self.error_message.set('Computer name or password is incorrect.')      
     
@@ -185,15 +184,36 @@ class MainPage(tk.Frame):
                     self.update_cpu()
                 if(self.controller.user.track_memory == True):
                     self.update_memory()
+                if(self.controller.user.track_disk == True):
+                    self.update_disks()
                 mydb.commit()
                 time.sleep(1)
                 if self.controller.user.computer_stats_tracker_switch == False:
                     break
                 if master_switch == False:
                     break
-            sql = "UPDATE stats SET cpu_percent = %s, cpu_max_percent = %s WHERE cid = %s"
-            val = ('0', '0', self.controller.user.cid)
-            mycursor.execute(sql,val)
+            sql = "UPDATE user SET tracking_all_stats = DEFAULT WHERE cid = %s"
+            val = (self.controller.user.cid,)
+            mycursor.execute(sql, val)
+            sql = """UPDATE stats SET cpu_percent = DEFAULT, 
+                cpu_max_percent = DEFAULT,
+                cpu_count_physical = DEFAULT,
+                cpu_count_logical = DEFAULT,
+                cpu_frequency = DEFAULT,
+                memory_total = DEFAULT,
+                memory_available = DEFAULT,
+                memory_used = DEFAULT,
+                memory_percent = DEFAULT
+                WHERE cid = %s"""
+            val = (self.controller.user.cid,)
+            mycursor.execute(sql, val)
+            sql = """UPDATE disks SET disk_total = DEFAULT,
+                disk_used = DEFAULT,
+                disk_free = DEFAULT,
+                disk_percent = DEFAULT
+                WHERE cid = %s"""
+            val = (self.controller.user.cid,)
+            mycursor.execute(sql, val)            
             mydb.commit()
         thread = threading.Thread(target=run)
         thread.start()
@@ -219,11 +239,48 @@ class MainPage(tk.Frame):
         mycursor.execute(sql, val)
 
     def update_disks(self):
-        return True
+        old_disks = self.controller.user.disks
+        self.controller.user.disks = psutil.disk_partitions()
+        for old_disk in old_disks:
+            exist = False
+            for new_disk in self.controller.user.disks:
+                if(new_disk[0]==old_disk[0]):
+                    exist = True
+            if(not exist):
+                sql = "UPDATE disks SET disk_total = DEFAULT, disk_used = DEFAULT, disk_free = DEFAULT, disk_percent = DEFAULT WHERE (cid = %s) and (disk_path = %s)"
+                val =(self.controller.user.cid, old_disk[0])
+                mycursor.execute(sql, val)
+        for disk in self.controller.user.disks:
+            sql = "SELECT * FROM disks WHERE (cid=%s) AND (disk_path = %s)"
+            val = (self.controller.user.cid, disk[0])
+            mycursor.execute(sql, val)
+            row_count = mycursor.rowcount
+            if(row_count==0):
+                try:
+                    sql = "INSERT INTO disks (cid, disk_path, disk_total, disk_used, disk_free, disk_percent) VALUES (%s, %s, %s, %s, %s, %s)"
+                    disk_stats = psutil.disk_usage(disk[0])
+                    val = (self.controller.user.cid, disk[0], round(disk_stats[0]/1073741824, 2), round(disk_stats[1]/1073741824, 2), round(disk_stats[2]/1073741824, 2), disk_stats[3])
+                    mycursor.execute(sql, val)
+                except:
+                    pass
+            else:
+                try:
+                    sql = "UPDATE disks SET disk_total = %s, disk_used = %s, disk_free = %s, disk_percent = %s WHERE (cid = %s) and (disk_path = %s)"
+                    disk_stats = psutil.disk_usage(disk[0])
+                    val =(round(disk_stats[0]/1073741824, 2), round(disk_stats[1]/1073741824, 2), round(disk_stats[2]/1073741824, 2), disk_stats[3], self.controller.user.cid, disk[0])
+                    mycursor.execute(sql, val)
+                except:
+                    sql = "UPDATE disks SET disk_total = DEFAULT, disk_used = DEFAULT, disk_free = DEFAULT, disk_percent = DEFAULT WHERE (cid = %s) and (disk_path = %s)"
+                    val = (self.controller.user.cid, disk[0])
+                    mycursor.execute(sql, val)        
 
     def start_tracker(self):
         self.controller.user.computer_stats_tracker_switch = True
         print('CPU Tracker On')
+        sql = "UPDATE user SET tracking_all_stats = 1 WHERE cid = %s"
+        val = (self.controller.user.cid,)
+        mycursor.execute(sql, val)
+        mydb.commit()
         self.tracker()
 
     def stop_tracker(self):
@@ -248,7 +305,7 @@ class SettingsPage(tk.Frame):
         memory_on = tk.Radiobutton(self, text="ON", indicatoron = 1, variable = memoryToggle, value = 1)
         memory_off = tk.Radiobutton(self, text="OFF", indicatoron = 1, variable = memoryToggle, value = 0)
         disk_on = tk.Radiobutton(self, text="ON", indicatoron = 1, variable = diskToggle, value = 1)
-        disk_off = tk.Radiobutton(self, text="OFF", indicatoron = 1, variable = cpuToggle, value = 0)
+        disk_off = tk.Radiobutton(self, text="OFF", indicatoron = 1, variable = diskToggle, value = 0)
 
         back_button = tk.Button(self, text="BACK", command=lambda: self.controller.show_frame("MainPage"))
         quit_button = tk.Button(self, text="QUIT", command=controller.kill)
@@ -273,16 +330,35 @@ class SettingsPage(tk.Frame):
     def update_settings(self, cpuToggle, memoryToggle, diskToggle):
         if (cpuToggle == 1):
             self.controller.user.track_cpu = True
+            sql = "UPDATE user SET tracking_cpu = DEFAULT WHERE cid = %s"
+            val = (self.controller.user.cid,)
+            mycursor.execute(sql, val)
         elif(cpuToggle == 0):
             self.controller.user.track_cpu = False
+            sql = "UPDATE user SET tracking_cpu = 0 WHERE cid = %s"
+            val = (self.controller.user.cid,)
+            mycursor.execute(sql, val)
         if (memoryToggle == 1):
             self.controller.user.track_memory = True
+            sql = "UPDATE user SET tracking_memory = DEFAULT WHERE cid = %s"
+            val = (self.controller.user.cid,)
+            mycursor.execute(sql, val)
         elif(memoryToggle == 0):
             self.controller.user.track_memory = False
+            sql = "UPDATE user SET tracking_memory = 0 WHERE cid = %s"
+            val = (self.controller.user.cid,)
+            mycursor.execute(sql, val)
         if(diskToggle == 1):
             self.controller.user.track_disk = True
+            sql = "UPDATE user SET tracking_disk = DEFAULT WHERE cid = %s"
+            val = (self.controller.user.cid,)
+            mycursor.execute(sql, val)
         elif(diskToggle == 0):
             self.controller.user.track_disk = False
+            sql = "UPDATE user SET tracking_disk = 0 WHERE cid = %s"
+            val = (self.controller.user.cid,)
+            mycursor.execute(sql, val)
+        mydb.commit()
 
 if __name__ == "__main__":
     app = ComputerStatsApp()
