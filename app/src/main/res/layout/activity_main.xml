@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <!-- Name Label -->
+    <!-- Computer Name Label -->
     <TextView android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Computer Name"
@@ -21,7 +21,7 @@
         android:layout_marginBottom="15dip"
         android:singleLine="true"/>
 
-    <!-- Price Label -->
+    <!-- Password Label -->
     <TextView android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Password"
@@ -49,7 +49,8 @@
         android:paddingBottom="10dip"
         android:textSize="17dip"
         android:textColor="#FF0000"
-        android:textStyle="italic"/>
+        android:textStyle="italic"
+        android:visibility="gone"/>
 
     <!-- Button Create Product -->
     <Button android:id="@+id/btnLogin"

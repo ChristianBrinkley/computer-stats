@@ -4,42 +4,332 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView android:layout_width="wrap_content"
+    <!-- Status Label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tracker Not Currently Running"
+        android:id="@+id/status_label"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="24dip"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
+    <!-- Computer User Label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Current Logged In User:"
+        android:id="@+id/computer_user_label"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="24dip"
+        android:layout_below="@+id/status_label"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
+    <!-- Computer User -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/computer_user"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="24dip"
+        android:layout_below="@id/status_label"
+        android:layout_toRightOf="@+id/computer_user_label"
+        android:visibility="gone"/>
+
+    <!-- System Boot Time Label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Computer Boot Time:"
+        android:id="@+id/system_boot_time_label"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="24dip"
+        android:layout_below="@+id/computer_user_label"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
+    <!-- System Boot Time -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/system_boot_time"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="24dip"
+        android:layout_below="@+id/computer_user_label"
+        android:layout_toRightOf="@+id/system_boot_time_label"
+        android:visibility="gone"/>
+
+    <!-- CPU Statistics Label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CPU Statistics:"
+        android:id="@+id/cpu_stats_label"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="24dip"
+        android:layout_below="@+id/system_boot_time_label"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
+    <!-- CPU Percent Label -->
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="CPU Percent:"
         android:id="@+id/cpu_percent_label"
         android:paddingLeft="10dip"
         android:paddingRight="10dip"
         android:paddingTop="10dip"
-        android:textSize="17dip"/>
-
-    <TextView android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Max CPU Percent:"
-        android:id="@+id/max_cpu_percent_label"
-        android:paddingLeft="10dip"
-        android:paddingRight="10dip"
-        android:paddingTop="10dip"
         android:textSize="17dip"
-        android:layout_below="@+id/cpu_percent_label"/>
+        android:layout_below="@+id/cpu_stats_label"
+        android:visibility="gone"/>
 
-    <TextView android:layout_width="wrap_content"
+    <!-- CPU Percent -->
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/cpu_percent"
         android:paddingLeft="10dip"
         android:paddingRight="10dip"
         android:paddingTop="10dip"
         android:textSize="17dip"
-        android:layout_toRightOf="@+id/cpu_percent_label"/>
+        android:layout_below="@+id/cpu_stats_label"
+        android:layout_toRightOf="@+id/cpu_percent_label"
+        android:visibility="gone"/>
 
-    <TextView android:layout_width="wrap_content"
+    <!-- CPU Max Percent Label -->
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/max_cpu_percent"
+        android:text="Max CPU Percent:"
+        android:id="@+id/cpu_max_percent_label"
         android:paddingLeft="10dip"
         android:paddingRight="10dip"
         android:paddingTop="10dip"
         android:textSize="17dip"
-        android:layout_toRightOf="@+id/max_cpu_percent_label"
-        android:layout_below="@+id/cpu_percent_label"/>
+        android:layout_below="@+id/cpu_percent_label"
+        android:visibility="gone"/>
 
+    <!-- CPU Max Percent -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cpu_max_percent"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="17dip"
+        android:layout_toRightOf="@+id/cpu_max_percent_label"
+        android:layout_below="@+id/cpu_percent_label"
+        android:visibility="gone"/>
+
+    <!-- CPU Count Physical Label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Physical CPU Cores:"
+        android:id="@+id/cpu_count_physical_label"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="17dip"
+        android:layout_below="@+id/cpu_max_percent_label"
+        android:visibility="gone"/>
+
+    <!-- CPU Count Physical -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cpu_count_physical"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="17dip"
+        android:layout_toRightOf="@+id/cpu_count_physical_label"
+        android:layout_below="@+id/cpu_max_percent_label"
+        android:visibility="gone"/>
+
+    <!-- CPU Count Logical Label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Logical CPU Cores:"
+        android:id="@+id/cpu_count_logical_label"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="17dip"
+        android:layout_below="@+id/cpu_count_physical_label"
+        android:visibility="gone"/>
+
+    <!-- CPU Count Logical -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cpu_count_logical"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="17dip"
+        android:layout_toRightOf="@+id/cpu_count_logical_label"
+        android:layout_below="@+id/cpu_count_physical_label"
+        android:visibility="gone"/>
+
+    <!-- CPU Frequency Label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CPU Frequency:"
+        android:id="@+id/cpu_frequency_label"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="17dip"
+        android:layout_below="@+id/cpu_count_logical_label"
+        android:visibility="gone"/>
+
+    <!-- CPU Frequency -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cpu_frequency"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="17dip"
+        android:layout_toRightOf="@+id/cpu_frequency_label"
+        android:layout_below="@+id/cpu_count_logical_label"
+        android:visibility="gone"/>
+
+    <!-- Memory Statistics Label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Memory Statistics:"
+        android:id="@+id/memory_stats_label"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="24dip"
+        android:layout_below="@+id/cpu_frequency_label"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
+    <!-- Memory Percent Label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Memory Percent:"
+        android:id="@+id/memory_percent_label"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="17dip"
+        android:layout_below="@+id/memory_stats_label"
+        android:visibility="gone"/>
+
+    <!-- Memory Percent -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/memory_percent"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="17dip"
+        android:layout_below="@+id/memory_stats_label"
+        android:layout_toRightOf="@+id/memory_percent_label"
+        android:visibility="gone"/>
+
+    <!-- Memory Total Label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Memory Total:"
+        android:id="@+id/memory_total_label"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="17dip"
+        android:layout_below="@+id/memory_percent_label"
+        android:visibility="gone"/>
+
+    <!-- Memory Total -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/memory_total"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="17dip"
+        android:layout_below="@+id/memory_percent_label"
+        android:layout_toRightOf="@+id/memory_total_label"
+        android:visibility="gone"/>
+
+    <!-- Memory Used Label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Memory Used:"
+        android:id="@+id/memory_used_label"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="17dip"
+        android:layout_below="@+id/memory_total_label"
+        android:visibility="gone"/>
+
+    <!-- Memory Used -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/memory_used"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="17dip"
+        android:layout_below="@+id/memory_total_label"
+        android:layout_toRightOf="@+id/memory_used_label"
+        android:visibility="gone"/>
+
+    <!-- Memory Available Label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Memory Available:"
+        android:id="@+id/memory_available_label"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="17dip"
+        android:layout_below="@+id/memory_used_label"
+        android:visibility="gone"/>
+
+    <!-- Memory Available -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/memory_available"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip"
+        android:textSize="17dip"
+        android:layout_below="@+id/memory_used_label"
+        android:layout_toRightOf="@+id/memory_available_label"
+        android:visibility="gone"/>
 </RelativeLayout>

@@ -112,13 +112,20 @@ public class MainActivity extends AppCompatActivity {
                     Intent i = new Intent(getApplicationContext(), ViewStats.class);
                     i.putExtra("cid", json.getString(TAG_CID));
                     startActivity(i);
-
                     // closing this screen
                     finish();
                 } else {
                     // failed to login
-                    error_message = (TextView) findViewById(R.id.error_message);
-                    error_message.setText(json.getString(TAG_MESSAGE));
+                    final String MSG = json.getString(TAG_MESSAGE);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            error_message = (TextView) findViewById(R.id.error_message);
+                            error_message.setVisibility(View.VISIBLE);
+                            error_message.setText(MSG);
+                        }
+                    });
+
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
