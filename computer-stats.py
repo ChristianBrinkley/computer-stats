@@ -1,11 +1,33 @@
 import tkinter as tk
-import psutil
 import time
 import threading
-import mysql.connector
-from passlib.hash import sha256_crypt
 import uuid
 import datetime
+import sys
+
+import_success = True
+import_needed = ""
+
+try:
+    import psutil
+except ImportError:
+    import_success = False
+    import_needed += "psutil import failed.\n"
+
+try:
+    from passlib.hash import sha256_crypt
+except ImportError:
+    import_success = False
+    import_needed += "passlib import failed.\n"
+
+try:
+    import mysql.connector
+except ImportError:
+    import_success = False
+    import_needed += "mysql.connector import failed.\n"
+
+if (not import_success):
+    sys.exit(import_needed)
 
 mydb = mysql.connector.connect(host="localhost", port="8889", user="computer-stats", password="ouaGS1zjUeu5sW3x", database="computer-stats")
 mycursor = mydb.cursor(buffered=True)
