@@ -33,7 +33,11 @@ if (not import_success):
 config = configparser.ConfigParser()
 config.read('db-config.ini')
 
-mydb = mysql.connector.connect(host=config['DEFAULT']['host'], port=config['DEFAULT']['port'], user=config['DEFAULT']['user'], password=config['DEFAULT']['password'], database=config['DEFAULT']['database'])
+try:
+    mydb = mysql.connector.connect(host=config['DEFAULT']['host'], port=config['DEFAULT']['port'], user=config['DEFAULT']['user'], password=config['DEFAULT']['password'], database=config['DEFAULT']['database'])
+except:
+    sys.exit("Failed to connect to mysql database")
+
 mycursor = mydb.cursor(buffered=True)
 
 master_switch = True
