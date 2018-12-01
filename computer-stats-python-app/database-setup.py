@@ -1,6 +1,18 @@
-import mysql.connector
+import configparser
+import sys
 
-mydb = mysql.connector.connect(host="localhost", port="8889", user="computer-stats", password="ouaGS1zjUeu5sW3x", database="computer-stats")
+config = configparser.ConfigParser()
+config.read('db-config.ini')
+
+try:
+    import mysql.connector
+except ImportError:
+    sys.exit("Failed to import mysql.connector")
+
+try:
+    mydb = mysql.connector.connect(host=config['DEFAULT']['host'], port=config['DEFAULT']['port'], user=config['DEFAULT']['user'], password=config['DEFAULT']['password'], database=config['DEFAULT']['database'])
+except:
+    sys.exit("Failed to connect to mysql database")
 
 mycursor = mydb.cursor()
 

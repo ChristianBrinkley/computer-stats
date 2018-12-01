@@ -4,6 +4,7 @@ import threading
 import uuid
 import datetime
 import sys
+import configparser
 
 import_success = True
 import_needed = ""
@@ -29,7 +30,10 @@ except ImportError:
 if (not import_success):
     sys.exit(import_needed)
 
-mydb = mysql.connector.connect(host="localhost", port="8889", user="computer-stats", password="ouaGS1zjUeu5sW3x", database="computer-stats")
+config = configparser.ConfigParser()
+config.read('db-config.ini')
+
+mydb = mysql.connector.connect(host=config['DEFAULT']['host'], port=config['DEFAULT']['port'], user=config['DEFAULT']['user'], password=config['DEFAULT']['password'], database=config['DEFAULT']['database'])
 mycursor = mydb.cursor(buffered=True)
 
 master_switch = True
@@ -144,7 +148,7 @@ class LoginPage(tk.Frame):
             cid = uuid.uuid4()
             cid = str(cid)
             sql = "INSERT INTO user (cid, computer_name, password) VALUES (%s, %s, %s)"
-            val = (cid, computerName, sha256_crypt.encrypt(password))
+            val = (cid, computerName, sha256_crypt.hash(password))
             mycursor.execute(sql, val)
             sql = "INSERT INTO stats (cid) VALUES (%s)"
             val = (cid,)
