@@ -10,12 +10,12 @@ computer-stats contains three parts:
 - android studio
 - local server (such as MAMP)
 ### Required Python Libraries:
-- [psutil] (https://psutil.readthedocs.io/en/latest/)
-- [mysql.connector] (https://dev.mysql.com/doc/connector-python/en/)
-- [passlib] (https://passlib.readthedocs.io/en/stable/)
+- [psutil](https://psutil.readthedocs.io/en/latest/)
+- [mysql.connector](https://dev.mysql.com/doc/connector-python/en/)
+- [passlib](https://passlib.readthedocs.io/en/stable/)
 
 ## Instilation
 1. Configure files to properly connect to 
 2. Setting up mySQL database
-   -Create new user account with name computer-stats and a database with the same name and is granted all privliages. [Example] (https://www.amazon.com/photos/share/E5ZD1ZUkvbjI5P8sW6aq2iuFR3iVyiF8hYpXxqNw0UD)
+   - Create new user account with name computer-stats and a database with the same name and is granted all privliages. [Example](https://imgur.com/a/iHp8gSY)
    -
