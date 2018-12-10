@@ -34,7 +34,7 @@ config = configparser.ConfigParser()
 config.read('db-config.ini')
 
 try:
-    mydb = mysql.connector.connect(host=config['DEFAULT']['host'], port=config['DEFAULT']['port'], user=config['DEFAULT']['user'], password=config['DEFAULT']['password'], database=config['DEFAULT']['database'])
+    mydb = mysql.connector.connect(host=config['DEFAULT']['DB_HOST'], port=config['DEFAULT']['DB_PORT'], user=config['DEFAULT']['DB_USERNAME'], password=config['DEFAULT']['DB_PASSWORD'], database=config['DEFAULT']['DB_DATABASE'])
 except:
     sys.exit("Failed to connect to mysql database")
 

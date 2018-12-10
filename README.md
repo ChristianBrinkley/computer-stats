@@ -33,3 +33,11 @@ Installing and using computer-stats requires the user to be able to host your ow
    [Example](https://imgur.com/a/iHp8gSY)
 
 ## Running
+Once you've setup your MySQL database you need to edit the config files which are located at `/computer-stats-connector/db_config.php` and `/computer-stats-python-app/db-config.ini`. The config variables are listed below.
+
+### Config
+#### DB_USERNAME 
+#### DB_PASSWORD
+#### DB_HOST
+#### DB_DATABASE
+#### DB_PORT
