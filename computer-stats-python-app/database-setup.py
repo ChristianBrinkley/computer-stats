@@ -82,3 +82,5 @@ sql = """CREATE TABLE disks (
 mycursor.execute(sql)
 
 mydb.commit()
+
+print("Database succesfully setup.")
