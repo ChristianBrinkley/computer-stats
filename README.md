@@ -30,7 +30,7 @@ Installing and using computer-stats requires the user to be able to host your ow
    Password can be whatever you want  
    Check the create database with same name and grant all privileges box  
    All other settings can be left as default  
-   [Example](https://imgur.com/a/iHp8gSY.png)
+   [Example](https://i.imgur.com/TCdkgT2.png)
 
 ## Running
 Once you've setup your MySQL database you need to edit the config files which are located at `/computer-stats-connector/db_config.php` and `/computer-stats-python-app/db-config.ini`. The config variables are listed below.
