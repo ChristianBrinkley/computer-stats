@@ -12,7 +12,7 @@ computer-stats contains three parts:
 ### Required Software:
 - [python 3.7](https://www.python.org/downloads/release/python-370/)
 - [android studio](https://developer.android.com/studio/)
-- local server (such as [MAMP](https://www.mamp.info/en/))
+- local server ([MAMP](https://www.mamp.info/en/))
 
 ### Required Python Libraries:
 - [psutil](https://psutil.readthedocs.io/en/latest/)
@@ -25,10 +25,10 @@ Installing and using computer-stats requires the user to be able to host your ow
 2. Inside the repository is a folder named `/computer-stats-connector` this folder needs to be moved into `/MAMP/htdocs`
 3. To set up a new MySQL database create new user account with the following properties
 
-   User name: computer-stats 
-   Host name: localhost
-   Password can be whatever you want
-   Check the create database with same name and grant all privileges box. 
+   User name: computer-stats  
+   Host name: localhost  
+   Password can be whatever you want  
+   Check the create database with same name and grant all privileges box.  
    [Example](https://imgur.com/a/iHp8gSY)
 
 4. 
