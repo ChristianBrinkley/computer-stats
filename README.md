@@ -28,7 +28,8 @@ Installing and using computer-stats requires the user to be able to host your ow
    User name: computer-stats  
    Host name: localhost  
    Password can be whatever you want  
-   Check the create database with same name and grant all privileges box.  
+   Check the create database with same name and grant all privileges box  
+   All other settings can be left as default  
    [Example](https://imgur.com/a/iHp8gSY)
 
-4. 
+## Running
