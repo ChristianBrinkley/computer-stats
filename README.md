@@ -54,7 +54,7 @@ Once you've setup your MySQL database you need to edit the config files which ar
 
 I have not setup proper configuration for the android app yet so currently you must go in and edit two lines of code to have the proper IP and port. Inside MainActivity.java on line 38 and ViewStats.java on line 86 a url is set like so  
 `url_computer_stats = new URI("http", "192.168.1.91:8888", "/computer-stats-connector/get_computer_stats.php", null, null);`  
-you must change the IP `192.168.1.91:8888` to match the IP of the computer running your server and the port that Apache is using.
+you must change the IP `192.168.1.91:8888` to match the IP of the computer running your server and the port that Apache is using. (Apache port can be found in MAMP preferences-->ports)
 
 Once you've edited the config files and .java files to properly interact with your server you need to run database-setup.py using the following command inside `/computer-stats-python-app` folder  
 `python database-setup.py`  
