@@ -1,4 +1,4 @@
-Tracked Stats - Main Table
+Tracked Stats - Stats Table
 cpu_percent
 cpu_max_percent
 cpu_count
@@ -10,7 +10,7 @@ memory_available
 memory_used
 memory_percent
 system_boot_time
-user
+computer_user
 
 Tracked Stats - Disk Partitions
 disk_path
