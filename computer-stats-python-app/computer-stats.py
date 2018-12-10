@@ -9,6 +9,7 @@ import configparser
 import_success = True
 import_needed = ""
 
+# Try blocks for checking if the user has all the needed libraries installed
 try:
     import psutil
 except ImportError:
@@ -30,9 +31,11 @@ except ImportError:
 if (not import_success):
     sys.exit(import_needed)
 
+# setting up and reading config file
 config = configparser.ConfigParser()
 config.read('db-config.ini')
 
+# trying to connect to MySQL database
 try:
     mydb = mysql.connector.connect(host=config['DEFAULT']['DB_HOST'], port=config['DEFAULT']['DB_PORT'], user=config['DEFAULT']['DB_USERNAME'], password=config['DEFAULT']['DB_PASSWORD'], database=config['DEFAULT']['DB_DATABASE'])
 except:
@@ -40,8 +43,10 @@ except:
 
 mycursor = mydb.cursor(buffered=True)
 
+# global variable that is used to switch off the tracker if the application is killed
 master_switch = True
 
+# User class that has settings for what is being tracked and info about computer that is being tracked
 class User(object):
 
     computer_stats_tracker_switch = True
@@ -55,7 +60,7 @@ class User(object):
         self.password = password
         self.disks = disks
 
-
+# TKinter Tk class ComputerStatsApp
 class ComputerStatsApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -69,6 +74,7 @@ class ComputerStatsApp(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
+        # Makes the three Pages child classes of itself
         self.frames = {}
         for F in (LoginPage, MainPage, SettingsPage):
             page_name = F.__name__
@@ -78,16 +84,19 @@ class ComputerStatsApp(tk.Tk):
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.show_frame("LoginPage")
-
+        
+    # show_frame is used to switch between frames
     def show_frame(self, page_name):
         frame = self.frames[page_name]
         frame.tkraise()
 
+    # kill is used to turn off the tracker and close the window
     def kill(self):
         global master_switch
         master_switch = False
         self.destroy()
 
+# TKinter Frame class LoginPage
 class LoginPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -119,6 +128,10 @@ class LoginPage(tk.Frame):
         button3.grid(row=4, column=1, sticky='we')
         button2.grid(row=4, column=2, sticky='we')
     
+    # login takes in a computer name and password and checks them against the database
+    # to try and find the correct table entry for the computer the user is on. If it
+    # finds an entry it will create a user object for it's parent class and tell the 
+    # parent class to render a new frame otherwise updates GUI with error message
     def login(self, computerName, password):
         sql = "SELECT password FROM user WHERE computer_name = %s"
         val = (computerName,)
@@ -143,6 +156,10 @@ class LoginPage(tk.Frame):
         else:
             self.error_message.set('Computer name or password is incorrect.')      
     
+    # newUser takes a computer name and password and attempts to create a new
+    # entry into the user table of the database. If succesful then it creates
+    # a user object for it's parent class and tells the parent class to render
+    # a new frame otherwise it updates the GUI with an error message
     def newUser(self, computerName, password):
         sql = "SELECT * FROM user WHERE computer_name = %s"
         val = (computerName,)
@@ -179,6 +196,7 @@ class LoginPage(tk.Frame):
             elif (len(password) <= 3):
                 self.error_message.set("Password must be longer than 3 characters.")
         
+# TKinter Frame class MainPage
 class MainPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -198,6 +216,7 @@ class MainPage(tk.Frame):
         button_quit.grid(row=2, column=0, sticky='we', padx=5, pady=5)
         button_settings.grid(row=2, column=1, sticky='we', padx=5, pady=5)
 
+    # tracker starts a thread that will continuously update the database with new stats until broken
     def tracker(self):
         def run ():
             system_boot_time = psutil.boot_time()
@@ -248,6 +267,7 @@ class MainPage(tk.Frame):
         thread = threading.Thread(target=run)
         thread.start()
     
+    # update_cpu updates the cpu statistics in the database
     def update_cpu(self):
         sql = "SELECT cpu_max_percent FROM stats WHERE cid = %s"
         val = (self.controller.user.cid,)
@@ -262,12 +282,14 @@ class MainPage(tk.Frame):
             val_u = (current_cpu, self.controller.user.cid)
         mycursor.execute(sql_u,val_u)
 
+    # update_memory updates the memory statistics in the database
     def update_memory(self):
         memory = psutil.virtual_memory()
         sql = "UPDATE stats SET memory_available = %s, memory_used = %s, memory_percent = %s WHERE cid = %s"
         val = (round(memory[1]/1073741824, 2), round(memory[3]/1073741824, 2), memory[2], self.controller.user.cid)
         mycursor.execute(sql, val)
 
+    # update_disks updates the disk usage statistics in the database
     def update_disks(self):
         old_disks = self.controller.user.disks
         self.controller.user.disks = psutil.disk_partitions()
@@ -304,6 +326,7 @@ class MainPage(tk.Frame):
                     val = (self.controller.user.cid, disk[0])
                     mycursor.execute(sql, val)        
 
+    # start_tracker will cause tracker to run
     def start_tracker(self):
         self.controller.user.computer_stats_tracker_switch = True
         print('CPU Tracker On')
@@ -313,10 +336,12 @@ class MainPage(tk.Frame):
         mydb.commit()
         self.tracker()
 
+    # stop_tracker will cause tracker to turn off
     def stop_tracker(self):
         self.controller.user.computer_stats_tracker_switch = False
         print('CPU Tracker Off')
 
+# TKinter Frame class SettingsPage
 class SettingsPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -357,6 +382,7 @@ class SettingsPage(tk.Frame):
         save_button.grid(row=4, column=1)
         quit_button.grid(row=4, column=2)
 
+    # update_settings will update the variables of the user object of the parent class with new values based on what the user selected
     def update_settings(self, cpuToggle, memoryToggle, diskToggle):
         if (cpuToggle == 1):
             self.controller.user.track_cpu = True
@@ -392,5 +418,6 @@ class SettingsPage(tk.Frame):
 
 if __name__ == "__main__":
     app = ComputerStatsApp()
+    # this line makes sure that if the window is closed using the x in the top right that the tracker thread is properly shut off if it is running
     app.protocol("WM_DELETE_WINDOW", app.kill)
     app.mainloop()
