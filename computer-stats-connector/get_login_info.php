@@ -23,7 +23,7 @@ if (isset($_POST["computer_name"]) && isset($_POST["password"])) {
 	$password = $_POST['password'];
 	
     // get a computer_id from computer_id table
-    $result = mysqli_query($conn, "SELECT id, computer_name, password FROM computer_id WHERE computer_name = ('$computer_name')"); 	
+    $result = mysqli_query($conn, "SELECT cid, computer_name, password FROM user WHERE computer_name = ('$computer_name')"); 	
 	
     if (!empty($result)) {
         // check for empty result
@@ -34,7 +34,7 @@ if (isset($_POST["computer_name"]) && isset($_POST["password"])) {
 			if(hash_equals($hashed_password, crypt($password, $hashed_password))) {				
 				// success
 				$response["success"] = 1;
-				$response['cid'] = $row['id'];
+				$response['cid'] = $row['cid'];
 	 
 				// echoing JSON response
 				echo json_encode($response);
