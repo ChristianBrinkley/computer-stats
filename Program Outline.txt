@@ -1,0 +1,29 @@
+Tracked Stats - Main Table
+cpu_percent
+cpu_max_percent
+cpu_count
+cpu_frequency
+cpu_max_frequency
+cpu_min_frequency
+memory_total
+memory_available
+memory_used
+memory_percent
+system_boot_time
+user
+
+Tracked Stats - Disk Partitions
+disk_path
+disk_total
+disk_used
+disk_free
+disk_percent
+
+For Later
+swap_memory
+sensors_battery
+disk_type
+disk_io_counters
+net_io_counters
+sensors_temperatures
+sensors_fans
