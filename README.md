@@ -43,12 +43,28 @@ Once you've setup your MySQL database you need to edit the config files which ar
  Password that is associated with Username  
  Should match what you entered when setting up MySQL database  
 #### DB_HOST  
- Host ip  
+ Host IP  
  Should be set to `localhost`  
 #### DB_DATABASE  
  Database name which should match username  
  Should be set to `computer-stats`  
 #### DB_PORT  
  MySQL port  
- Should match your MySQL [port](https://i.imgur.com/xsgU9Al.png)
+ Should match your MySQL port (can be found in MAMP preferences-->ports)
 
+I have not setup proper configuration for the android app yet so currently you must go in and edit two lines of code to have the proper IP and port. Inside MainActivity.java on line 38 and ViewStats.java on line 86 a url is set like so  
+`url_computer_stats = new URI("http", "192.168.1.91:8888", "/computer-stats-connector/get_computer_stats.php", null, null);`  
+you must change the IP `192.168.1.91:8888` to match the IP of the computer running your server and the port that Apache is using.
+
+Once you've edited the config files and .java files to properly interact with your server you need to run database-setup.py using the following command inside `/computer-stats-python-app` folder  
+`python database-setup.py`  
+You should get a success message.  
+Note that this should only be run the first time you setup the program and that running this file again will clear all entries in your database.
+
+You can now run the actual python app using the following command inside `/computer-stats-python-app` folder  
+`python computer-stats.py`
+This should open up a GUI for you to interact with the app with
+
+Finally you can open android studio and select open an existing Android Studio project and select the `/computer-stats-android-app` folder. You can then build the program to your android device
+
+Once you've succesfully built to your android device if you create a user in the python app and turn on the tracker and then use the user info to log into the android app you should be able to view your computers statistics.
