@@ -71,7 +71,7 @@ Finally you can open android studio and select open an existing Android Studio p
 Once you've succesfully built to your android device if you create a user in the python app and turn on the tracker and then use the user info to log into the android app you should be able to view your computers statistics.
 
 ## Notes
-The instillation and running sections describe setting up the application for local use on a local server meaning your android device has to be connected to the same LAN as the computer you're monitoring (on the same Wi-Fi network). This could be circumvented by opening up the port for the Apache server so that the android app could connect from outside the network.
+The installation and running sections describe setting up the application for local use on a local server meaning your android device has to be connected to the same LAN as the computer you're monitoring (on the same Wi-Fi network). This could be circumvented by opening up the port for the Apache server so that the android app could connect from outside the network.
 
 In the running section I tell you to edit two lines of code in order to allow the android app to function. This is obviously not ideal and the next thing I want to do is move those variables into the settings for the app so that you can just change the IP inside the application. This has the added benefit that you wouldn't need to compile the program yourself as I could just have a precompiled .apk file in the repository.
 
